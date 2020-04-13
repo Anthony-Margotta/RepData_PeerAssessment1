@@ -30,11 +30,45 @@ qplot(steps, binwidth = 1000) + ylab("Days") + ggtitle("Total Steps per Day")
 The mean number of steps is `r mean_steps` steps and the median is `r median_steps` steps.
 
 ## What is the average daily activity pattern?
+The average activity over the intervals of the day can be estimated by average the number of steps per interval over each day. This is achieved with the `tapply` function.
+```{r}
+pattern <- tapply(activity$steps, activity$interval, mean, na.rm = TRUE)
+qplot(x = as.numeric(names(pattern)), y = pattern, geom = 'line') + ggtitle("Activity Level") +
+    ylab("Average Steps") + xlab("Interval")
+max_int <- names(pattern[pattern == max(pattern)])
+```
 
-
+The interval for which the average step count is maximum is `r max_int`.
 
 ## Imputing missing values
+```{r}
+num_na <- sum(is.na(activity$steps))
+```
 
+There are `r num_na` values for steps in the activity dataset. One way to address this is to subsititue the average steps for the interval (calculated previously) for the missing value.
 
+```{r}
+activity_narm <- activity
+for (i in seq(1, length(activity$steps))) {
+    if (is.na(activity$steps[i])) {
+        activity_narm$steps[i] <- pattern[as.character(activity$interval[i])]
+    }
+}
+
+steps <- tapply(activity_narm$steps, activity_narm$date, sum)
+mean_steps <- mean(steps, na.rm = TRUE)
+median_steps <- median(steps, na.rm = TRUE)
+qplot(steps, binwidth = 1000) + ylab("Days") + ggtitle("Total Steps per Day")
+```
+
+The new mean number of steps is `r mean_steps` steps and the new median is `r median_steps` steps. The result is that the mean is unchanged and the median very slightly increases/
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+```{r}
+activity$day = NA
+weekends <- weekdays(as.Date(activity$date)) %in% c("Saturday", "Sunday")
+activity$day[weekends] <- "weekend"
+activity$day[!weekends] <- "weekday"
+```
+
