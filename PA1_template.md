@@ -10,19 +10,31 @@ output:
 
 The data is in a zipped format, so it must be unzipped in order to be read by `read.csv`. No additional processing is necessary at this stage.
 
-```{r}
+
+```r
 activity <- read.csv(unzip("activity.zip"))
 ```
 
 
 ## What is mean total number of steps taken per day?
-```{r}
+
+```r
 library(ggplot2)
 steps <- tapply(activity$steps, activity$date, sum)
 mean_steps <- mean(steps, na.rm = TRUE)
 median_steps <- median(steps, na.rm = TRUE)
 qplot(steps) + ylab("Days")
 ```
+
+```
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+```
+
+```
+## Warning: Removed 8 rows containing non-finite values (stat_bin).
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
 
 
 ## What is the average daily activity pattern?
