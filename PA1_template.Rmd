@@ -16,14 +16,18 @@ activity <- read.csv(unzip("activity.zip"))
 
 
 ## What is mean total number of steps taken per day?
+
+Using `tapply`, the total steps for each date in the dataset may be summed. These totals are then plotted using `ggplot2`.
+
 ```{r}
 library(ggplot2)
 steps <- tapply(activity$steps, activity$date, sum)
 mean_steps <- mean(steps, na.rm = TRUE)
 median_steps <- median(steps, na.rm = TRUE)
-qplot(steps) + ylab("Days")
+qplot(steps, binwidth = 1000) + ylab("Days") + ggtitle("Total Steps per Day")
 ```
 
+The mean number of steps is `r mean_steps` steps and the median is `r median_steps` steps.
 
 ## What is the average daily activity pattern?
 
