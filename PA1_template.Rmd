@@ -66,9 +66,15 @@ The new mean number of steps is `r mean_steps` steps and the new median is `r me
 ## Are there differences in activity patterns between weekdays and weekends?
 
 ```{r}
+library(tidyr)
 activity$day = NA
 weekends <- weekdays(as.Date(activity$date)) %in% c("Saturday", "Sunday")
-activity$day[weekends] <- "weekend"
-activity$day[!weekends] <- "weekday"
+activity$day[weekends] <- "Weekend"
+activity$day[!weekends] <- "Weekday"
+pattern_w <- tapply(activity$steps, list(activity$interval, activity$day), mean, na.rm = T) %>%
+  as_tibble(rownames = "Interval") %>% 
+  pivot_longer(-Interval, names_to = "Day", values_to = "Steps")
+ggplot(pattern_w, aes(as.numeric(Interval), Steps)) + geom_line(aes(group = Day)) + 
+  facet_grid(vars(Day)) + xlab("Interval")
 ```
 

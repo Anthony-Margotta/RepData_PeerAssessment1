@@ -79,6 +79,23 @@ qplot(steps, binwidth = 1000) + ylab("Days") + ggtitle("Total Steps per Day")
 
 ![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
 
-The mean number of steps is 1.0766189\times 10^{4} steps and the median is 1.0766189\times 10^{4} steps.
+The new mean number of steps is 1.0766189\times 10^{4} steps and the new median is 1.0766189\times 10^{4} steps. The result is that the mean is unchanged and the median very slightly increases/
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+
+```r
+library(tidyr)
+activity$day = NA
+weekends <- weekdays(as.Date(activity$date)) %in% c("Saturday", "Sunday")
+activity$day[weekends] <- "Weekend"
+activity$day[!weekends] <- "Weekday"
+pattern_w <- tapply(activity$steps, list(activity$interval, activity$day), mean, na.rm = T) %>%
+  as_tibble(rownames = "Interval") %>% 
+  pivot_longer(-Interval, names_to = "Day", values_to = "Steps")
+ggplot(pattern_w, aes(as.numeric(Interval), Steps)) + geom_line(aes(group = Day)) + 
+  facet_grid(vars(Day)) + xlab("Interval")
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+
